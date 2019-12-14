@@ -1,0 +1,115 @@
+name: ephemeral
+base: core18 
+adopt-info: ephemeral
+summary: The always-incognito web browser
+description: |
+  Browse the Internet in private without leaving a trace of history
+  on your computer. Ephemeral is a stripped down private browser
+  that's perfect for avoiding persistent cookies or web trackers.
+  Close the window and all traces of your browsing are removed 
+  from your device.
+  The snap build of ephemeral is not supported by the upstream
+  developer. Please file issues at https://github.com/popey/ephemeral-snap/issues
+  and not upstream. Thank you.
+  Support development of ephemeral at https://cassidyjames.com/pay/
+license: GPL-3.0
+grade: stable
+confinement: strict
+
+slots:
+  ephemeral:
+    interface: dbus
+    bus: session
+    name: com.github.cassidyjames.ephemeral
+
+parts:
+  elementary-sdk:
+    plugin: nil
+    build-packages:
+      - software-properties-common
+    override-pull: |
+      add-apt-repository -y ppa:elementary-os/stable
+      add-apt-repository -y ppa:elementary-os/os-patches
+      apt -y update
+      apt -y upgrade
+  ephemeral:
+    after: [elementary-sdk]
+    source: https://github.com/cassidyjames/ephemeral.git
+    plugin: meson
+    meson-parameters:
+      - --prefix=/usr
+    override-pull: |
+      snapcraftctl pull
+      last_committed_tag="$(git describe --tags --abbrev=0)"
+      last_committed_tag_ver="$(echo ${last_committed_tag} | sed 's/v//')"
+      last_released_tag="$(snap info $SNAPCRAFT_PROJECT_NAME | awk '$1 == "beta:" { print $2 }')"
+      # If the latest tag from the upstream project has not been released to
+      # beta, build that tag instead of master.
+      if [ "${last_committed_tag_ver}" != "${last_released_tag}" ]; then
+        git fetch
+        git checkout "${last_committed_tag}"
+      fi
+    override-build: |
+      snapcraftctl build
+      sed -i.bak -e 's|Icon=com.github.cassidyjames.ephemeral$|Icon=${SNAP}/usr/share/icons/hicolor/128x128@2/apps/com.github.cassidyjames.ephemeral.svg|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/com.github.cassidyjames.ephemeral.desktop
+      snapcraftctl set-version $(git -C ../src describe --tags)
+    build-packages:
+      - libgranite-dev
+      - libgtk-3-dev
+      - libwebkit2gtk-4.0-dev
+      - libdazzle-1.0-dev
+      - meson
+      - valac
+    stage-packages:
+      - libglu1-mesa
+      - libpulse0
+      - libdazzle-1.0-0
+      - libgranite5
+      - libbrotli1
+      - libegl1
+      - libenchant1c2a
+      - libgbm1
+      - libgstreamer-gl1.0-0
+      - libgstreamer-plugins-base1.0-0
+      - libgstreamer1.0-0
+      - libgudev-1.0-0
+      - libharfbuzz-icu0
+      - libhyphen0
+      - libjavascriptcoregtk-4.0-18
+      - libnotify4
+      - liborc-0.4-0
+      - libsecret-1-0
+      - libwayland-server0
+      - libwebkit2gtk-4.0-37
+      - libwebp6
+      - libwebpdemux2
+      - libwoff1
+      - libxslt1.1
+
+apps:
+  ephemeral:
+    extensions: [gnome-3-28]
+    common-id: com.github.cassidyjames.ephemeral
+    desktop: usr/share/applications/com.github.cassidyjames.ephemeral.desktop
+    environment:
+      LD_LIBRARY_PATH: "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio"
+      GSETTINGS_SCHEMA_DIR: "$SNAP/usr/local/share/glib-2.0/schemas"
+    command: com.github.cassidyjames.ephemeral
+    plugs: 
+      - network
+      - cups-control
+      - x11
+      - opengl
+      - audio-playback
+      - audio-record
+      - camera
+      - gsettings
+      - browser-support
+      - joystick
+      - home
+      - removable-media
+      - network-bind
+      - unity7
+      - desktop
+      - desktop-legacy
+      - screen-inhibit-control
