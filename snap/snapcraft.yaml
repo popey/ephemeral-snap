@@ -35,10 +35,12 @@ parts:
   ephemeral:
     after: [elementary-sdk]
     source: https://github.com/cassidyjames/ephemeral.git
+    source-tag: "6.1.1"
     plugin: meson
     meson-parameters:
       - --prefix=/usr
     override-pull: |
+      set -eu
       snapcraftctl pull
       last_committed_tag="$(git describe --tags --abbrev=0)"
       last_committed_tag_ver="$(echo ${last_committed_tag} | sed 's/v//')"
@@ -49,9 +51,11 @@ parts:
         git fetch
         git checkout "${last_committed_tag}"
       fi
+      cat ./data/launcher.desktop.in
+      sed -i.bak -e 's|Icon=com.github.cassidyjames.ephemeral$|Icon=${SNAP}/usr/share/icons/hicolor/128x128@2/apps/com.github.cassidyjames.ephemeral.svg|g' ./data/launcher.desktop.in
+      cat ./data/launcher.desktop.in
     override-build: |
       snapcraftctl build
-      sed -i.bak -e 's|Icon=com.github.cassidyjames.ephemeral$|Icon=${SNAP}/usr/share/icons/hicolor/128x128@2/apps/com.github.cassidyjames.ephemeral.svg|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/com.github.cassidyjames.ephemeral.desktop
       snapcraftctl set-version $(git -C ../src describe --tags)
     build-packages:
       - libgranite-dev
@@ -94,7 +98,7 @@ apps:
     environment:
       LD_LIBRARY_PATH: "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio"
       GSETTINGS_SCHEMA_DIR: "$SNAP/usr/local/share/glib-2.0/schemas"
-    command: com.github.cassidyjames.ephemeral
+    command: usr/bin/com.github.cassidyjames.ephemeral
     plugs: 
       - network
       - cups-control
