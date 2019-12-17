@@ -16,6 +16,12 @@ license: GPL-3.0
 grade: stable
 confinement: strict
 
+architectures:
+  - build-on: amd64
+  - build-on: armhf
+  - build-on: i386
+  - build-on: arm64
+
 slots:
   ephemeral:
     interface: dbus
