@@ -64,6 +64,7 @@ parts:
       - libdazzle-1.0-dev
       - meson
       - valac
+      - gettext
     stage-packages:
       - libglu1-mesa
       - libpulse0
