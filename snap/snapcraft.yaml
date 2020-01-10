@@ -28,6 +28,11 @@ slots:
     bus: session
     name: com.github.cassidyjames.ephemeral
 
+plugs:
+  browser-sandbox:
+    interface: browser-support
+    allow-sandbox: true
+
 parts:
   elementary-sdk:
     plugin: nil
@@ -105,6 +110,7 @@ apps:
     environment:
       LD_LIBRARY_PATH: "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio"
       GSETTINGS_SCHEMA_DIR: "$SNAP/usr/local/share/glib-2.0/schemas"
+      GTK_USE_PORTAL: "1"
     command: usr/bin/com.github.cassidyjames.ephemeral
     plugs: 
       - network
@@ -115,7 +121,7 @@ apps:
       - audio-record
       - camera
       - gsettings
-      - browser-support
+      - browser-sandbox
       - joystick
       - home
       - removable-media
