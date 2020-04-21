@@ -46,7 +46,6 @@ parts:
   ephemeral:
     after: [elementary-sdk]
     source: https://github.com/cassidyjames/ephemeral.git
-    source-tag: "6.3.1"
     plugin: meson
     meson-parameters:
       - --prefix=/usr
