@@ -112,20 +112,30 @@ apps:
       GTK_USE_PORTAL: "1"
     command: usr/bin/com.github.cassidyjames.ephemeral
     plugs:
-      - network
-      - cups-control
-      - x11
-      - opengl
       - audio-playback
       - audio-record
+      - bluez
+      - browser-support
       - camera
-      - gsettings
-      - browser-sandbox
-      - joystick
-      - home
-      - removable-media
-      - network-bind
-      - unity7
+      - cups-control
       - desktop
       - desktop-legacy
+      - gsettings
+      - home
+      - joystick
+      - mount-observe
+      - mpris
+      - network
+      - network-bind
+      - network-manager
+      - opengl
+      - password-manager-service
+      - pulseaudio
+      - removable-media
       - screen-inhibit-control
+      - system-packages-doc
+      - unity7
+      - upower-observe
+      - wayland
+      - x11
+
